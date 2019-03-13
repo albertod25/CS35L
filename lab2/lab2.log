@@ -1,0 +1,125 @@
+check locale
+ > LC_TYPE = en_US...
+$export LC_ALL='C'
+
+Grab a sorted copy of words from /usr/share/dict/words. Download html file
+from course website.
+
+ $sort /usr/share/dict/words >words
+ $wget https://web.cs.ucla.edu/classes/winter19/cs35L/assign/assign2.html 
+  assign2.html
+
+NOTE: '//' signifies a comment I would like to make about what is happening
+      '$'  signifies a command that I entered
+      '>'  signifies the output from the command that I entered
+
+Begin sequence of translate commands as specified in the assignment
+{
+  $echo assign2.html | tr -c 'A-Za-z' '[\n*]'
+    > assign
+    >
+    > html
+
+  // I noticed that this only printed the literal "assign2.html" not the 
+  // contents of the file. Try again:
+
+  $cat assign2.html | tr -c 'A-Za-z' '[\n*]'
+    > // Prints all alphabetical characters in assign2.html. All 
+      // non-alphabetical words are replaced with new lines
+  $cat assign2.html | tr -cs 'A-Za-z' '[\n*]'
+    > // Similar to previous command except all consecutive repetitions are 
+      // reduced to one occurence. Empty lines are eliminated.
+  $cat assign2.html | tr -cs 'A-Za-z' '[\n*]' | sort
+    > // Similar to previous command except each line has been sorted by 
+      // alphabetical order. Duplicates allowed.
+  $cat assign2.html | tr -cs 'A-Za-z' '[\n*]' | sort -u
+    > // Similar to previous command except duplicates are deleted.
+  $cat assign2.html | tr -cs 'A-Za-z' '[\n*]' | sort -u | comm - words
+    > // Output too large to see onscreen. According to man comm, after 
+      // assign2.html was translated according to previous commands, the output
+      // was compared to file 'words.' Output separated into three columns with
+      // first column containing assign2.html-specific words, second had 
+      // words-specific words, and third had all similar words. Column 2 far 
+      // outweighed other columns.
+  $cat assign2.html | tr -cs 'A-Za-z' '[\n*]' | sort -u | comm -23 - words
+    > // Ouput too large to see fully on screen. From 'comm' manual page I 
+      // learned that this command works the same as the previous command 
+      // except it suppresses columns 2 and 3. In other words, it prints all 
+      // words unique to assign2.html. From the specs page of the assignment
+      // this command acts as a crude spell checker. Surprisingly, common
+      // words like 'accent' are marked misspelled...
+}
+
+WRITING BUILDWORDS SCRIPT:
+To start my buildwords script, I downloaded the Hawaiian webpage so I test my 
+script as I go.
+$wget http://mauimapp.com/moolelo/hwnwdseng.htm
+
+I figured the first thing I should do was simplify the text by removing all 
+the html tags:
+$sed 's/<[^>]*>//g'
+
+Seems good. I notice that all the content I really want is in the table 
+itself, so I should probably remove everything before and after the table:
+$sed '/HAWAIIAN/,/.../d' |
+$sed '/www.maui/,/letters\./d'
+
+Second command worked perfect, but a string of periods was left above the main
+ part of the text. I try adding some additional commands like:
+$sed '/\.../,\.../d'
+$sed '/.../,/.../d'
+Neither of these commands did what I wanted them to do, so I figured I'd come 
+back to fix somewhere else in the script and leave these out.
+
+I notice there are a lot of blank spaces, so I get rid of them with a command 
+given to us in the class slides:
+$tr -ds '[:blank:]' '[^\n*]'
+
+Everything looks good and I quickly realize that I've gotten all the English 
+to be on every other line, meaning I could probably figure out a way to delete
+them:
+$sed '1~2d'
+Nothing happened... why?.....maybe if I move this somewhere else.....no?.... 
+OH, I forgot a pipe.
+
+From here, I do some rapid fire commands that the specs very specifically 
+outlined for us:
+$tr '[:upper:]' '[:lower:]' |
+$sed 's/`/'\''/g' |
+$sed 's/, /\n/g' |
+$sed "s/.*[^pk'mnwlhaeiou].*//"
+$sort -u
+
+I run the script and notice a blank line at the top from the string of periods
+ I left. Before the sort command:
+$sed '/^$/d'
+
+Full buildwords script:
+{
+
+#!/bin/bash
+
+sed 's/<[^>]*>//g' |
+sed '/HAWAIIAN/,/.../d' |
+sed '/www.maui/,/letters\./d' |
+tr -ds '[:blank:]' '[^\n*]' |
+sed '1~2d' |
+tr '[:upper:]' '[:lower:]' |
+sed 's/`/'\''/g' |
+sed 's/, /\n/g' |
+sed "s/.*[^pk'mnwlhaeiou].*//" |
+sed '/^$/d' |
+sort -u
+
+}
+
+When I run the Hawaiian spell checker I get 494 errors. On the other hand,
+when I run the English spell checker, I only get 49 errors. Looking at the
+ouput, I quickly realize the the large disparity comes from the fact that the
+English alphabet is much larger than the Hawaiian one, so when we run this on
+a webpage written in English, of course there are going to be tons of errors.
+
+The only mistake in English but not in Hawaiian is the word "wiki." There were
+a lot of mistakes in Hawaiian also that were not in English such as "you" and
+"works." Words misspelled in both were usually lingo words like "wget" or 
+"wikipedia."

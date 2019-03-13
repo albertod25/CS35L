@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#goes through all the arguments that were passed in
+
+grep -drecurse -P -L '[^\x00-\x7f]' $@

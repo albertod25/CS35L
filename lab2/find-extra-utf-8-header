@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#grabs the files that contain UTF-8 characters
+ufiles=$(grep -drecurse -P -L '[^\x00-\x7f]' $@)
+
+#iterates through the list of files
+while read -r line; do
+	#Checks if the first line is what we expect
+	if [ "$(head -n1 "$line")" == "-*- coding: utf-8 -*-" ]; then
+		echo $line
+	fi
+done <<< "$ufiles"

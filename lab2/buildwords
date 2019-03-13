@@ -1,0 +1,13 @@
+#!/bin/bash
+
+sed 's/<[^>]*>//g' |
+sed '/HAWAIIAN/,/.../d' |
+sed '/www.maui/,/letters\./d' |
+tr -ds '[:blank:]' '[^\n*]' |
+sed '1~2d' |
+tr '[:upper:]' '[:lower:]' |
+sed 's/`/'\''/g' |
+sed 's/, /\n/g' |
+sed "s/.*[^pk'mnwlhaeiou].*//" |
+sed '/^$/d' |
+sort -u
