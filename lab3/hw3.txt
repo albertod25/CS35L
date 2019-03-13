@@ -1,0 +1,37 @@
+Q1.
+The patch improved performance if only by a little. Looking through the patch
+file, we see that the only difference between the original ls and patched ls
+command is an 'if' statement. In the original, there is a variable named
+ignore_mode which is set to a constant if it meets a certain criteria. In the
+patched version, that check never happens and ignore_mode is always set to the
+constant.
+
+Q2.
+If my company were to adopt this version of ls, we would need to watch out for
+compatibility with different machines and versions that our clients may use.
+Especially because we have an updated version of Coreutils before the next
+release, it may be easy to forget our version of ls runs differently on 8.29
+than everyone who hasn't patched their own system. Thus if we release an
+application that we claim to be compatible with Coreutils 8.29, but the a
+certain functionality relies on our own patched version of ls, this will cause
+unnecessary bugs for a wide portion of our client base.
+
+Q3.
+When we ran the randline.py program with the /dev/null file, we get an error
+File "/usr/local/cs/Python-2.7.14/lib/python2.7/random.py", line 277, in choice
+    return seq[int(self.random() * len(seq))]  # raises IndexError if seq is 
+    empty
+    IndexError: list index out of range
+
+The error message very clearly states that if an IndexError is raised if seq is
+empty. Of course, because we passed in a NULL file, seq was set to empty.
+
+Q4.
+When we run the program with python3, we get a syntaxerror when reading the
+exception line.
+ File "randline.py", line 65
+    except IOError as (errno, strerror):
+
+A quick google search confirmed that this command used to be compatible in
+Python2 because exceptions used to be iterable. This was changed in Python3 to
+conform to other rules the command broken even when it used in Python2.

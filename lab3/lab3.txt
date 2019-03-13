@@ -1,0 +1,104 @@
+I start by checking the ls command on my current working directory:
+$ls -a
+$ls -A
+$ls -aA
+$ls -Aa
+
+I find that the same error occurs as described in the assignment specs. I then
+check the version of Coreutils version for /usr/bin/ls:
+$ /usr/bin/ls --version
+ > //currently on 8.22
+
+1.
+I downloaded compressed tarball for the Coreutiles package using the command:
+$ wget ftp://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz
+
+When I tried to check the signature for the compressed tarball file however, I
+received an error that warned ther was no file with suffix '.sig' nor a file
+named gnu-keyring. 
+
+I realized I never downloaded the other files that were given to us in the
+specs:
+$ wget ftp://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz.sig
+$ wget https://ftp.gnu.org/gnu/gnu-keyring.gpg
+
+When I ran the check signature command again, I was told the signature was good
+but also received the following warning:
+WARNING: This key is not certified with a trusted signature!
+         There is no indication that the signature belongs to the owner.
+This warning most likely comes the fact that I used a public key given to us by
+the specs rather than a different type of key. This is not so much of a problem
+because I received the key from a reliable source.
+
+2.
+First, I unzipped the coreutils file I downloaded:
+$ tar -xJvf coreutils-8.29.tar.xz
+
+I then made a directory where I'll install coreutils:
+$ mkdir ~/coreutilsInstall
+
+I change directories into the coreutiles-8.29 directory that I just unzipped
+and read the INSTALL file inside. I am looking for info into the --prefix flag
+for make and configure. I learn that I can provide the absolute path to the
+directory I just created into the ./configure command:
+$ ./configure --prefix=/u/cs/ugrad/albertod/coreutilsInstall
+$ make
+$ make install
+
+3.
+I move into the coreutilsInstall directory where I installed the new package.
+I move into the /bin subdirectory where I should be able to find the old $ls
+command. I repeat the same commands as above... Bug was not present.
+
+I then ran the commands:
+$ ./ls -a
+$ ./ls -A
+$ ./ls -Aa
+$ ./ls -aA
+
+Old bugs were successfully reproduced in this directory.
+
+4.
+I moved back to the coreutils-8.29 directory and created a file patch_file, to
+which I copied and pasted the contents from Bug#30963 Message #10. I then ran
+$ patch -p1 > patch_file
+
+This produced an error which told me 'hunk1 failed at NEWS'
+
+I realize that the patch file does not try to patch the same version of NEWS
+that is present in our coreutils-8.29 directory. I attempt to look back and
+rewrite patch_file so that it matches what our version of NEWS looks like.
+Unfortunately, doing so caused further problems when patching the next file. I 
+figure I can manually fix it because NEWS is just a txt file. I should be able
+to continue without causing a problem later on.
+
+Other patches worked perfectly.
+
+5.
+I run command
+$ make
+but I encounter a problem where the shell gives me an error that says something
+along the lines of a the file 'automake-1.15' does not exist on my system.
+
+After consulting with classmates, I run the command:
+$ autoreconf -f -i
+The command allows me to run make without an error.
+
+After I run make, the script goes through several directories. For most of
+them, it either leaves immediately or states "Nothing to be done for 'all'".
+The most interesting lines are:
+  CC       src/ls.o
+  CCLD     src/dir
+  CCLD     src/ls
+  CCLD     src/vdir
+  GEN      man/dir.1
+  GEN      man/ls.1
+  GEN      man/vdir.1
+which is the script recompiling the ls command and revising the man page for
+ls. Of course this was the only task that needed to be done seeing as how our
+patch only affected those aspects. This saved a lot of time.
+
+6.
+After the patch, I stayed in the coreutils-8.29 directory and ran the same test
+as we did in the beginning. To our luck, the bug disappeared and our patch was
+successful.
