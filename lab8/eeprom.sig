@@ -1,0 +1,11 @@
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQEcBAABAgAGBQJciC6BAAoJEOz0Ys6rTJHvgpUH/jrr1/VfGbogDk4JpevZcO/O
+XohdAUI1bC5HCmqekgKyqrhY3/bAZZOCR5rumSMMBepJ9EwxMEVsFMt+husaGwjj
+j3Y8kACd4874ygjZ/N/++UVK/naEbXsQkGkvaazNq4qEi8SiEcZUDQWQOGGONeoK
+dV1zfh4qpja0r/+fG0jVgbkan37VvPb/QanHWjVzLSZcootNarDlRPVbyV8IoUed
+8jTRv0SL0ztWbZ5IuaoWPkDpAFv069cIeKq+DZ0kW35nl1EpBlyAYNt0ApjdjkLv
+FqozZo9kAk5/E/GuNqw/XkvQHCStXgxMkZeQMRC9WdYVNE8cIsvmo/ABgrUTCqg=
+=xqr9
+-----END PGP SIGNATURE-----

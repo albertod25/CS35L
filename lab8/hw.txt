@@ -1,0 +1,32 @@
+1.
+Yes, the resulting network would still be secure because the observer could
+have gotten all the encrypted data the client and server were passing between
+each other, but there is still no way to deduce the private key needed to
+decrypt it.
+
+1a.
+The network would still be secure, although we have lost a good chunk of our
+confidentiality. With tapped keyboards, the attackers could learn what kind of
+information the client may ask from the server and how the server might
+respond. For example, the client may want to edit a file on the server. The
+attackers would be able to see the name of the file by what the client types,
+but they will never figure out what was already inside of it. This is because
+they do not hold the private key that is needed to decrypt data sent back to
+the client. This fact is also why even though the attacker may get a hold of
+the client's passphrase, they still do not hold the private key to decrypt data
+encrypted by the server.
+
+1b.
+If you boot off a USB then total security is lost if the attacker gets physical
+control of it. They can then make a copy of your private key and be able to 
+decrypt messages between you and the server. Also, if you are not able to
+retrieve the USB, then you may not be able to authenticate yourself the next
+time you want to log in because you do not hold the private key.
+
+2.
+The $gpg2 --verify command does not verify that you created a file because it
+does not try to authenticate the user at all. All that --verify does is it
+compares a message digest that the receiver produces and compares it with the
+signature we give it. The purpose is to check the integrity of the file, not
+its authenticity. We would need a different software the checks whether the
+ID on the signature matches the ID of the user in question. 

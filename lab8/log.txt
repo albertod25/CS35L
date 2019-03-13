@@ -1,0 +1,77 @@
+For this lab, I borrowed my Beaglebone from a friend who recently took this
+class. He had finished most of the setup process so I just needed to figure out
+how to get it work on my computer. I tried to install the drivers from the
+start site, but these would fail everytime. Instead, I followed one of the
+Piazza posts that mentioned Windows would reject the signature from the default
+package. Luckily, they gave an alternate source which worked perfectly for me.
+
+I continued to work through the setup instructions from Piazza and checked if
+my friend had the most up-to-date software that we'd need. To do this, I
+downloaded to most recent update and tried to install, but Beaglebone returned
+that it already had this version. He also mentioned Firefox was installed, so
+I skipped that step also.
+
+I also checked his settings for X11 forwarding as mentioned in the setup post
+on Piazza. I look at the files /etc/ssh/ssh_config and /etc/ssh/sshd_config.
+Both had correct settings for X11 forwarding that said 'X11Forwarding yes'.
+
+For this lab, my partner was Keano Zamora.
+
+We began with Keano as the server while I acted as the client. Keano walked
+through his steps as the server while I watched and tried to make sense of the
+instructions alongside him. We actually repeated this process twice: once by
+ourselves, and the second with help from Tanmay Chinchore. We repeated the
+process after coming across a problem with using X11 forwarding. The first
+attempt at logging into Keano's Beaglebone via ssh was successful, but I forgot
+to enable X11 on PuTTy which made us believe there was en error after all. This
+was when we decided to get help from Tanmay who quickly found the problem and
+Keano and I repeated the process.
+
+The following comes from our second attempt with Tanmay.
+
+To begin, Keano generated a set of public and private keys:
+$ ssh-keygen
+
+He then created an account for me to log into:
+$ sudo useradd -d /home/user123 -m user123
+$ sudo passwd user123
+  > 1234
+
+Next, my partner created a directory where I could work using ssh:
+$ cd /home/user123
+$ sudo mkdir .ssh
+
+Last, he transferred ownership to me so I could have more privileges when I 
+want to ssh into my directory:
+$ sudo chown -R username .ssh
+$ sudo chmod 700 .ssh
+
+Everything is set to go and I could attempt to log into the directory myself.
+To begin, I created my own set of public and private keys:
+$ ssh-keygen
+
+At this point, Keano and I check that we are one the same wifi network. We
+decide to both be one UCLA_WEB as this wifi does not require any credentials.
+I then asked Keano for his IP address so I can ssh into his Beaglebone. He does
+this using the ifconfig command. With the IP address, I am able to copy my
+public key to the server for key-based authentication:
+$ ssh-copy-id -i user123@172.31.98.12
+
+I then attempt to add my private key to the authentication agent:
+$ ssh-add
+
+Unfortunately, this command gave some sort of error. I failed to copy the error
+report and do not remember what it said (as a result of writing this log after
+completeting the lab). We figured however, that we should still be able to ssh
+into Keano's Beaglebone:
+$ ssh -X user123@172.31.98.12
+  > passphrase? 1234
+
+The log on was successfuly. I then test out firefox:
+$ firefox
+
+An Xming window opened up but firefox immediately crashed. After some attempts
+at trying to get firefox to work, we conclude that either the Beaglebone is not
+powerful enough, or the internet connection is too weak to be able to run
+firefox. Either way, the request to open firefox on my computer still went
+through, so we declared this lab a success.
