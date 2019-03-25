@@ -1,0 +1,115 @@
+Exercise 1.1:
+  2. C-s HTML Enter
+  3. C-s scavenger Enter
+  4. C-s self-referential Enter
+  5. C-s arrow Enter
+  6. C-e
+  7. C-a
+  8. I figured out that using search takes my cursor to the end of the first keyword I input.
+     I also figured out that C-e takes me to the end of a line and C-a takes me to the start.
+  9. N/A
+  10. C-x C-c
+
+Exercise 1.2:
+  2. M-g 18
+     C-a
+     C-k
+  3. C-s DE Enter
+     C-a
+     C-k
+  4. C-s <https Enter
+     C-a
+     C-k
+     (UP)
+     C-k
+     (DOWN DOWN)
+     C-k
+  5. C-s <! C-d C-d C-d C-d C-d Backspace Backspace
+     C-s <! C-a C-k (DOWN) C-K (DOWN) C-k
+
+Exercise 1.3:
+  1. emacs exer3.html
+  2. C-s A
+     M-f M-f Backspace 42
+     C-s A
+     M-f M-f Backspace 42
+  5. M-<
+     C-s U
+     C-d C-d C-d C-d Backspace
+     US-ASCII
+  4. M-<
+     C-M-s [^[:ascii:]] Enter
+     C-a C-k
+     C-M-s [^[:ascii:]] Enter
+  5. M-<
+     C-s </ol>
+     C-o
+
+Exercise 1.4:
+  3. M-> Up UP C-SP Down M-w
+     M-< C-s </html> Enter C-y
+  4. M-> (Hold Up until next comment) C-a C-SP Down Down Down Down
+     M-w M-< C-s nothing. C-e Enter C-y
+     C-s nothing. C-SP C-e Left Left Left Left Left
+     M-w M-< C-s nothing. C-y
+     M-< C-s <!-- diff C-a C-SP Down Down
+     M-w M-< C-s hunt</h2> Enter C-y
+     M-< C-s <!-- DEL C-a C-SP Down
+     M-w M-< C-s Emacs</h2> Enter C-y
+     M-< C-s <!-- Yo C-a C-SP Down Down Down
+     M-w M-< C-s mit</h2> Enter C-y
+  5. M-< C-s </html Down Down
+     C-SP M-> Backspace
+  6. C-u C-x u
+  7. M-< C-s </html Down Down
+     <!--
+     M-> Enter
+     -->
+  8. M-< M-% <ol> <oL> SP SP SP SP SP SP SP
+     I found 7 occurrences
+
+Exercise 1.5:
+  1. mkdir junk
+  2. touch hello.c
+     (Copy code from specs) C-y
+  3. M-x compile
+     C-a C-k
+     gcc hello.c -o hello
+  4. C-x b hello-out
+     C-u M-! ./hello
+  5. C-x h M-w
+     C-x C-f Backspace Backspace Backspace Backspace Backspace c s 3 5 l / k e y 1 . t x t
+     M-> C-y
+
+#include <stdio.h>
+int
+main (void)
+{
+  char n = '\n', b = '\\', q = '"';
+  char const *p = "#include <stdio.h>%cint%cmain (void)%c{%c  char n = '%cn', b = '%c%c', q = '%c';%c  char const *p = %c%s%c;%c  printf (p, n, n, n, n, b, b, b, q, n, q, p, q, n, n, n, n);%c  return 0;%c}%c";
+  printf (p, n, n, n, n, b, b, b, q, n, q, p, q, n, n, n, n);
+  return 0;
+}
+
+Exercise 1.6:
+  1. C-x b *scratch*
+  2. (random "604-967-268")
+     C-j
+     OUTPUT: -1852849813718354709
+  3. M-< C-x h Backspace
+     (setq x (random)) C-j
+     (setq y (random)) C-j
+  4. (* x y) C-j
+     The product is incorrect. The random number generator gave two large negative numbers for x and y, so we'd expect
+     a positive answer, but the product was still negative.
+  5. M-: (* x y)
+     I observe no discernible difference between the two evaluations
+  6. No, the numbers given are not truly random. This comes as a limitation of the machine itself as it is only
+     fundamentally capable of making calculations. Thus the (random) function must have some mathematical function
+     tied to it with pre-determined parameters, albeit difficult to determine as an outsider.
+  7. If the (random) function were truly random, we could calculate the probability of the product of two integers
+     given by the function to be incorrect by understanding why this calculation would produce a wrong answer. The
+     most likely source of incorrect products is overflow, so we could set up an analysis of the likelihood of
+     getting a pair of numbers whose product would cause an overflow. The idea would be to
+     calculate the number of combinations that will cause an overflow and compare that to the total number of 
+     combinations possible given the range of the machine.

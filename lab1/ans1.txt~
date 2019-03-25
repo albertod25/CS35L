@@ -1,0 +1,7 @@
+1. COMMANDS: man man
+   ANS: apropos
+2. COMMANDS: whereis mv
+   ANS: /usr/bin/mv /usr/local/cs/bin/mv /usr/share/man/man1p/mv.1p.gz /usr/share/man/man1/mv.1.gz
+   COMMANDS: whereis sh
+   ANS: /usr/bin/sh /usr/share/man/man1p/sh.1p.gz /usr/share/man/man1/sh.1.gz
+3. 

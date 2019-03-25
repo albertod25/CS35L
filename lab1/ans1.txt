@@ -1,0 +1,41 @@
+1. COMMANDS: man man
+   ANS: apropos
+2. COMMANDS: whereis mv
+   ANS: /usr/bin/mv /usr/local/cs/bin/mv /usr/share/man/man1p/mv.1p.gz /usr/share/man/man1/mv.1.gz
+   COMMANDS: whereis sh
+   ANS: /usr/bin/sh /usr/share/man/man1p/sh.1p.gz /usr/share/man/man1/sh.1.gz
+3. COMMAND: file /usr/local/cs -maxdepth 1 -type d -mtime -28
+   ANS: /usr/local/cs
+        /usr/local/cs/bin
+        /usr/local/cs/.del
+        /usr/local/cs/bison-3.2.3
+        /usr/local/cs/ocaml-4.07.1
+        /usr/local/cs/grep-3.3
+8. COMMANDs: whereis find
+             find /usr/bin -type l | wc -l
+   ANS: 28
+9. COMMANDS: cd /usr/lib64
+             ls -lt
+   ANS: librom1394.so.0.3.0
+10.COMMANDS: man locale
+   ANS: The locale command gets its data from certain settings of the environment variables.
+11.COMMANDS: C-h a downcase
+   ANS: downcase-dwim
+        downcase-region
+        downcase-word
+12.COMMANDS: C-h k [command]
+   ANS: C-M-r => invokes an "incremental search backward for regular expression"
+        C-M-s => invokes an "incremental search forward for regular expression"
+        C-M-t => switches the places of two s-expressions with eachother
+        C-M-u => moves "backward out of one level of parentheses"
+        C-M-v => scrolls upward on the next page
+13.COMMAND: C-h k C-g
+   ANS: Similar to the "ctrl-c" in C, C-g sends a "quit" signal during execution of Lisp code to stop the 
+        program. If hit outside of code running, the computer beeps :)
+14.COMMAND: C-h f yank
+   ANS: Analagous to "paste" in Windows, it inserts text which has been previously killed, or "copied/cut"
+15.COMMAND: (on emacs) C-h f dired
+            C-x d (automatically filled in /usr/bin/)
+   COMMAND: (on Linux) cd /usr/bin
+   COMMAND: ls -l
+   ANS: I see no discernible difference.
