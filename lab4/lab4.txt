@@ -1,0 +1,128 @@
+To start, I download the buggy version of coreutils provided on the assignment
+specs using wget and unzip it:
+$ wget https://web.cs.ucla.edu/classes/winter19/cs35L/assign/
+coreutils-with-bug.tar.gz
+$ tar -xvzf coreutils-with-bug.tar.gz
+
+It unzips successfully. I make a temporary directory in home and run configure
+$ mkdir ~/buggyInstall
+$ ./configure --prefix=/u/cs/ugrad/albertod/buggyInstall
+$ make
+
+Make produced an error:
+In file included from utimecmp.c:41:
+utimens.h:2:5: error: conflicting types for 'futimens'
+ int futimens (int, char const *, struct timespec const [2]);
+     ^~~~~~~~
+In file included from utimecmp.h:25,
+                 from utimecmp.c:25:
+/usr/include/sys/stat.h:373:12: note: previous declaration of 'futimens' was
+here
+ extern int futimens (int __fd, const struct timespec __times[2]) __THROW;
+            ^~~~~~~~
+
+This error comes from the fact that make is trying to define a function named
+futimens which has already been defined in another directory included during
+compilation. The specs provide a patch file, which I predict will fix this
+problem by giving a new name to the futimens functions in utimecmp.c.
+$ wget https://web.cs.ucla.edu/classes/winter19/cs35L/assign/coreutils.diff
+$ patch -p0 -i coreutils.diff
+
+The patch goes through successfully and I run make and make install again. They
+succeed.
+
+I move into the buggyInstall directory that I just created with the buggy
+version of coreutils installed in it. I move into the bin directory and create
+some dummy documents to reproduce the bug:
+$ touch -d '1918-11-11 11:00 GMT' wwi-armistice
+$ touch now
+$ touch now1
+$ ./ls -lt --full-time wwi-armistice now now1
+
+I was surprised to see that instead of showing the date for wwi-armistice as 
+1918-11-11 as I expected, it instead showed the date 2054-12-17. Apparently I
+followed the instructions at the end of the specs by accident! That's one less
+thing to do...
+
+Some quick research on Piazza told me that someone else had this problem and
+fixed it by making a tmp dir and creating the dummy files there:
+$ tmp=$(mktemp -d)
+$ cd $tmp
+$ touch -d '1918-11-11 11:00 GMT' wwi-armistice
+$ touch now
+$ touch now1
+$ TZ=UTC0 ~/buggyInstall/bin/ls -lt --full-time wwi-armistice now now1
+
+This time, the bug was successfully reproduced.
+
+I try to enter to gdb and set up a breakpoint right at the main function. I
+check if I can see the local variables, but notice they say <optimized-out>. I
+go back to the coreutils-with-bug directory to re-make the buggyInstall. This
+time I configure with proper CFLAGS. I received help from a pinned Piazza post.
+$ make clean
+$ make distclean
+$ ./configure CFLAGS='-g -O0' --prefix=/u/cs/ugrad/albertod/buggyInstall
+$ make
+$ make install
+
+I return to the temp directory and recreate the same dummy files as before. I
+enter gdb again, set up a breakpoint at main, and try to see the local
+variables to ensure everything went well.
+
+From the message shown when I set a breakpoint on main, I open a new window to
+more easily inspect the ls.c file. After sifting through some of the lines, I
+saw a function called sort_files(). Of course, I'm intrigued and set a new
+breakpoint at sort_files. I step through the function and see that we arrive at
+a switch statement where we jump to 'case time_mtime'. Looking at the code, I
+check the value of variable sort_reverse using command 'p sort_reverse'. It is
+False, so I know that we move onto compare_mtime.
+
+Once again, I set a breakpoint and keep stepping through slowly. As I step
+through several function calls inside of compare_mtime, nothing seems 
+particularly suspicious until I end up in a function called timespec_cmp(...)
+inside timespec.h. I notice that it returns the difference of two structs
+called timespec. I suspect that this function is what is responsible for
+returning whether a file 'a' or 'b' is older by taking the difference between
+their times: if a is greater the diff is positive... etc. When we pass in a 
+file created so far into the past, there must be an overflow error that causes
+a large negative number minus a positive to end up being positive therefore
+considered greater (or newer in this case).
+
+I figure that a simple comparison operator, instead of taking the difference,
+may be the simplest solution for this patch. Of course, I save a copy of the
+original so that I can create a patch file later. I change the return command:
+
+return a.tv_sec > b.tv_sec ? 1 : a.tv_sec < b.tv_sec ? -1:
+  a.tv_nsec - b.tv_nsec;
+
+I run make again to compile the new ls program and go into the tmp directory.
+I repeat the same commands as last time, creating dummy files, and run the new
+ls function. This time, the bug is fixed!
+
+I return to the timespec.h file in coreutils-with-bug using emacs so I can go
+into the ChangeLog.
+$ emacs lib/timespec
+    C-x 4 a
+
+My entry:
+
+2019-02-12  Alberto Diaz  <albertod@lnxsrv06.seas.ucla.edu>
+
+	* timespec.h (timespec_cmp):
+	Removed subtraction comparison to prevent overflow error when given
+	large negative numbers. Replaced with direct comparison operators except
+	where files are close enough where checking nanoseconds is necessary.
+
+Then I save the ChangeLog and go back to the linux shell
+    C-x C-s
+    C-x C-c
+
+Lastly, I create two diff -u files, one for ChangeLog and one for timespec.h:
+$ diff -u timespec.h.orig lib/timespec.h > ls_patch.diff
+$ diff -u lib/ChangeLog~ lib/ChangeLog > log.diff
+$ cat log.diff ls_patch.diff > lab4.diff
+
+I change the patch file to better resemble files in the original
+coreutils-with-bug to ensure a patch would work (change timespec.h.orig to
+lib/timespec.h, and lib/ChangeLog~ to lib/ChangeLog). I test the patch file on
+a newly untared version of coreutils-with-bug, which works successfully!
